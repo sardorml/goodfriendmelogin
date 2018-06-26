@@ -112,6 +112,7 @@ app.get('/', function(req,res){
 	res.render("login");
 });
 app.post('/login', function(req,res,next){
+	nameholder = {'name':req.body.username};
 	passport.authenticate('local',{
 		successRedirect:'/home',
 		failureRedirect:'/error_login',
@@ -163,7 +164,7 @@ app.get('/login', function(req,res){
 });
 
 app.get('/home', function(req,res){
-	nameholder = {'name':req.user.name};
+	
 	res.render('home',{user:nameholder});
 });
 app.get('/round', function(req,res){

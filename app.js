@@ -21,7 +21,7 @@ let db = mongoose.connection;
  });
 
 let app = express();
-const PORT = process.env.PORT || 80;
+//const PORT = process.env.PORT || 8080;
 app.use(bodyParser.urlencoded({extended: false}));
 
 // DB schema
@@ -186,4 +186,4 @@ app.post('/home', function(req,res){
 
 
 
-app.listen(PORT, () => console.log('App is running on Port ', PORT));
+app.listen(80, () => console.log('App is running on Port 80'));

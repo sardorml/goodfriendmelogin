@@ -21,7 +21,7 @@ let db = mongoose.connection;
  });
 
 let app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 80;
 app.use(bodyParser.urlencoded({extended: false}));
 
 // DB schema

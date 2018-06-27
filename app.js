@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const config = require('./config/database');
@@ -40,16 +41,6 @@ var whole;
 var nameholder;
 //////
 
-// Access control
-/*
-var checkAuth = function(req,res,next){
-	if(req.isAuthenticated()){
-		res.redirect('/home');
-	}else{
-		res.redirect('/error_login');
-	}
-}
-*/
 var calculate = function(input){
 	if(input.number>1){
 		if(input.amount < 5000){ // if less than 5000
@@ -96,6 +87,13 @@ var roundIt = function(input){
 
 app.set('view engine', 'ejs');
 
+// Express Session
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true
+}));
+
 // Passport config
 
 require('./config/passport')(passport);
@@ -104,6 +102,7 @@ app.use(passport.session());
 
 // Global User
 app.get('*',function(req,res,next){
+	console.log(req.user);
 	res.locals.user = req.user || null;
 	next();
 });
@@ -117,6 +116,7 @@ app.post('/login', function(req,res,next){
 		successRedirect:'/home',
 		failureRedirect:'/error_login',
 	  })(req, res, next);
+	  console.log(req.isAuthenticated());
 });
 app.get('/reg', function(req,res){
 	res.render("reg");
@@ -156,7 +156,9 @@ app.get('/error_login', function(req,res){
 	res.render('error_login');
 });
 app.get('/logout', function(req,res){
-	res.render("/");
+	req.session.destroy(function(err) {
+	  res.redirect('/');
+	})
 });
 
 app.get('/login', function(req,res){
@@ -164,12 +166,19 @@ app.get('/login', function(req,res){
 });
 
 app.get('/home', function(req,res){
-	
-	res.render('home',{user:nameholder});
+	if(req.isAuthenticated())
+		res.render('home',{user:nameholder});
+	else
+		res.redirect('/error_login');
 });
 app.get('/round', function(req,res){
-	roundIt(input);
-	res.render("results",{obj: input, user:nameholder});
+	if(req.isAuthenticated()){
+		roundIt(input);
+		res.render("results",{obj: input, user:nameholder});
+	}
+	else
+		res.redirect('/error_login');
+	
 });
 
 
@@ -183,7 +192,6 @@ app.post('/home', function(req,res){
 	}
 	else res.render('error');	
 });
-
 
 
 app.listen(8080, () => console.log('App is running on Port 80'));

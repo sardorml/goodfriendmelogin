@@ -194,4 +194,4 @@ app.post('/home', function(req,res){
 });
 
 
-app.listen(8080, () => console.log('App is running on Port 80'));
+app.listen(80, () => console.log('App is running on Port 80'));
